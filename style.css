@@ -63,6 +63,18 @@ body {
     box-shadow: var(--tile-shadow-hover);
 }
 
+.tile:not(.start-button) {
+    opacity: 0;
+}
+
+.start-button {
+    transform: scale(3);
+}
+
+.start-button:hover {
+    transform: scale(3.02) !important;
+}
+
 .tile>span {
     font-family: arial;
     font-weight: 100;
@@ -129,7 +141,7 @@ body {
 }
 
 .become-visible {
-    animation: fade-in 0.5s ease-in-out forwards;
+    animation: fade-in 0.3s ease-in-out forwards;
 }
 
 @keyframes fade-in {
