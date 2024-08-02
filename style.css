@@ -19,9 +19,18 @@
 body {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
     gap: 30px;
+    margin: 0;
+    height: 100vh;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    justify-content: center;
+    align-items: center;
+    margin: auto 0px;
 }
 
 .container {
@@ -35,7 +44,6 @@ body {
     grid-template-columns: repeat(3, 75px);
     grid-template-rows: repeat(3, 75px);
     gap: 15px;
-    margin-top: 85px;
 }
 
 .tile {
@@ -51,9 +59,8 @@ body {
 }
 
 .tile:hover {
-    transform: scale(1.01);
+    transform: scale(1.02);
     box-shadow: var(--tile-shadow-hover);
-    /* cursor: pointer; */
 }
 
 .tile>span {
@@ -62,12 +69,19 @@ body {
     font-size: 50px;
 }
 
-.score-container {
+.player-score-container {
     width: 285px;
-    height: 75px;
+    /* height: 85px; */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.player-container {
     display: flex;
     justify-content: space-around;
-    align-items: center;
+    width: 100%;
 }
 
 .counter-container {
@@ -90,8 +104,28 @@ body {
     color: var(--tile-font-colour);
 }
 
+.active-turn::after {
+    content: '•';
+    position: absolute;
+    left: 15px;
+    color: var(--tile-font-colour);
+    z-index: 2;
+}
+
 .counter-container>span:nth-child(2) {
     font-size: 20px;
+    position: relative;
+}
+
+.turn-counter {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.turn-counter>span {
+    text-align: center;
+    width: 75px;
 }
 
 .become-visible {
