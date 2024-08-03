@@ -7,26 +7,21 @@ function addStartEvent() {
         tiles.forEach((tile, index) => {
             setTimeout(() => {
                 tile.classList.add("become-visible");
-            }, index * 100);
+            }, index * 150);
         });
-
-        playGame();
     });
 }
 
 function playGame() {
-    const tiles = document.querySelectorAll(".tile");
-    const tileTexts = document.querySelectorAll(".tile>span");
-    
 
-    function createPlayer() {
+    function makePlayer() {
         let score = 0;
 
         return {
             getScore: function() {
                 return score;
             },
-            increaseScore: function() {
+            incrementScore: function() {
                 score++;
             },
             resetScore: function() {
@@ -35,84 +30,90 @@ function playGame() {
         }
     }
 
-    function createEmptyBoard() {
-        return [
-            null, null, null,
-            null, null, null,
-            null, null, null
-        ]
-    }
-
-    function renderBoard() {
-        const newBoard = createEmptyBoard();
-        tileTexts.forEach((tileText, index) => {
-            tileText.textContent = newBoard[index]
-        })
-    }
-
-    function createTurnCounter() {
-        let turn = 1;
+    function makeRoundCounter() {
+        let round = 1;
 
         return {
-            getTurn: function() {
-                return turn;
+            getRound: function() {
+                return round;
             },
-            increaseTurn: function() {
-                turn++;
-            },
-            resetTurn: function() {
-                turn = 0;
+            incrementRound: function() {
+                round++;
             }
         }
     }
 
-    function checkWin(gameBoard) {
+    function checkWin(board) {
         const winningCombinations = [
-            [0, 1, 2], // Row 1
-            [3, 4, 5], // Row 2
-            [6, 7, 8], // Row 3
-            [0, 3, 6], // Column 1
-            [1, 4, 7], // Column 2
-            [2, 5, 8], // Column 3
-            [0, 4, 8], // Diagonal 1
-            [2, 4, 6]  // Diagonal 2
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
         ];
-    
-        for (const combination of winningCombinations) {
-            const [a, b, c] = combination;
-            if ((gameBoard[a] === 'X' && gameBoard[b] === 'X' && gameBoard[c] === 'X') || (gameBoard[a] === 'O' && gameBoard[b] === 'O' && gameBoard[c] === 'O') ) {
+
+        for (const [a, b, c] of winningCombinations) {
+            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
                 return true;
             }
         }
-    
+
         return false;
     }
 
-    function playRound() {
-        let playerOne = createPlayer();
-        let playerTwo = createPlayer();
-        let gameBoard = createEmptyBoard();
-        let turnCounter = createTurnCounter();
-        let currentMarker;
+    function addTileEventListeners() {
+        const tiles = document.querySelectorAll(".tile");
 
-        while (playerOne.getScore() < 3 && playerTwo.getScore() < 3) {
-            if (turnCounter.getTurn() %2 !== 0) {
-                currentMarker = 'X';
-            } else {
-                currentMarker = 'O';
-            }
-            tiles.forEach(tile => {
-                tile.addEventListener("click", (index) => {
-                    gameBoard[index] = currentMarker;
-                    renderBoard();
-                    checkWin(gameBoard);
-                    turnCounter.increaseTurn();
-                })
-            })
-        }
-
+        tiles.forEach((tile, index) => {
+            tile.addEventListener("click", () => {
+                if (!gameBoard[index]) {
+                    gameBoard[index] = marker;
+                }
+                if (checkWin(gameBoard)) {
+                    checkWinner();
+                    return;
+                }
+                turn.incrementRound();
+                renderBoard();
+            });
+        });
     }
-    playRound();
+
+    function renderBoard() {
+        const tileTexts = document.querySelectorAll(".tile>span");
+
+        tileTexts.forEach((tileText, index) => {
+            tileText.textContent = gameBoard[index];
+        })
+    }
+
+    function checkWinner() {
+        if (marker = 'X') {
+            playerX.incrementScore();
+        } else if (marker = 'O') {
+            playerO.incrementScore();
+        }
+    }
+
+    addTileEventListeners();
+
+    let gameBoard = Array(9).fill(null);
+
+    let playerX = makePlayer();
+    let playerO = makePlayer();
+
+    let turn = makeRoundCounter();
+
+    let marker;
+
+    if (turn.getRound % 2 !== 0) {
+        marker = 'X'
+    } else {
+        marker = 'O'
+    }
 }
 
-addStartEvent();
+window.onload = addStartEvent();
