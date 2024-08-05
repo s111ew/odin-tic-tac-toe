@@ -3,31 +3,42 @@ function addStartEvent() {
     const tiles = document.querySelectorAll(".tile");
     startButton.addEventListener("click", () => {
         startButton.classList.remove("start-button");
-        
+
         tiles.forEach((tile, index) => {
             setTimeout(() => {
                 tile.classList.add("become-visible");
             }, index * 150);
         });
+
+        setTimeout(() => {
+            playGame();
+        }, 1800);
     });
-    setTimeout(() => {
-        playGame()
-    }, 1200)
 }
 
 function playGame() {
-
     function makeBoard() {
-        let board = Array(9).fill(null);
+        let board = [
+            null, null, null,
+            null, null, null,
+            null, null, null
+        ];
 
         return {
             resetBoard: function() {
-                for (let i = 0; i < board.length; i++)
-                    {
-                        board[i] = null;
-                    }
+                board = [
+                    null, null, null,
+                    null, null, null,
+                    null, null, null
+                ];
+            },
+            getBoard: function() {
+                return board;
+            },
+            setTile: function(index, marker) {
+                board[index] = marker;
             }
-        }
+        };
     }
 
     function makePlayer() {
@@ -43,11 +54,11 @@ function playGame() {
             resetScore: function() {
                 score = 0;
             }
-        }
+        };
     }
 
     function makeMarker() {
-        let marker = 'X'
+        let marker = 'X';
 
         return {
             getMarker: function() {
@@ -59,7 +70,7 @@ function playGame() {
             resetMarker: function() {
                 marker = 'X';
             }
-        }
+        };
     }
 
     function checkWin(board) {
@@ -85,42 +96,38 @@ function playGame() {
 
     function renderBoard() {
         const tileTexts = document.querySelectorAll(".tile>span");
-        const playerXScore = document.querySelector(".score-1");
-        const playerOScore = document.querySelector(".score-2");
 
         tileTexts.forEach((tileText, index) => {
-            tileText.textContent = gameBoard[index];
-        })
-
-        playerXScore.textContent = playerX.getScore();
-        playerOScore.textContent = playerO.getScore();
-
+            tileText.textContent = gameBoard.getBoard()[index];
+        });
     }
 
     function playerTurn() {
-        if (marker === 'X') {
+        if (marker.getMarker() === 'X') {
             if (playerOScore.classList.contains("active-turn")) {
-                playerOScore.classList.remove("active-turn")
+                playerOScore.classList.remove("active-turn");
             }
             if (!playerXScore.classList.contains("active-turn")) {
-                playerXScore.classList.add("active-turn")
+                playerXScore.classList.add("active-turn");
             }
-        } else if (marker === 'O') {
+        } else if (marker.getMarker() === 'O') {
             if (playerXScore.classList.contains("active-turn")) {
-                playerXScore.classList.remove("active-turn")
+                playerXScore.classList.remove("active-turn");
             }
             if (!playerOScore.classList.contains("active-turn")) {
-                playerOScore.classList.add("active-turn")
+                playerOScore.classList.add("active-turn");
             }
         }
     }
 
-    function checkWinner() {
-        if (marker = 'O') {
+    function updateScores() {
+        if (marker.getMarker() === 'X') {
             playerX.incrementScore();
-        } else if (marker = 'X') {
+        } else if (marker.getMarker() === 'O') {
             playerO.incrementScore();
         }
+        playerXScore.textContent = playerX.getScore();
+        playerOScore.textContent = playerO.getScore();
     }
 
     function addTileEventListeners() {
@@ -128,30 +135,33 @@ function playGame() {
 
         tiles.forEach((tile, index) => {
             tile.addEventListener("click", () => {
-                if (!gameBoard[index]) {
-                    gameBoard[index] = marker.getMarker();
-                    playerTurn();
+                if (!gameBoard.getBoard()[index]) {
+                    gameBoard.setTile(index, marker.getMarker());
                     renderBoard();
-                    marker.changeMarker();
-                }
-                if (checkWin(gameBoard)) {
-                    checkWinner();
-                    gameBoard.resetBoard();
-                    marker.resetMarker()
-                    renderBoard();
+                    if (checkWin(gameBoard.getBoard())) {
+                        updateScores();
+                        gameBoard.resetBoard();
+                        marker.resetMarker();
+                        renderBoard();
+                    } else {
+                        marker.changeMarker();
+                        playerTurn();
+                    }
                 }
             });
         });
     }
 
     let gameBoard = makeBoard();
-
     let playerX = makePlayer();
     let playerO = makePlayer();
-
     let marker = makeMarker();
 
+    const playerXScore = document.querySelector(".score-1");
+    const playerOScore = document.querySelector(".score-2");
+
     addTileEventListeners();
+    playerTurn();  // Initialize the first turn
 }
 
-window.onload = addStartEvent();
+window.onload = addStartEvent;
