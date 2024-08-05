@@ -1,20 +1,21 @@
 function addStartEvent() {
-    const startButton = document.querySelector(".start-button");
-    const tiles = document.querySelectorAll(".tile");
-    startButton.addEventListener("click", () => {
-        startButton.classList.remove("start-button");
-
+    function renderTiles() {const tiles = document.querySelectorAll(".tile");
         tiles.forEach((tile, index) => {
             setTimeout(() => {
                 tile.classList.add("become-visible");
             }, index * 150);
-        });
+        });}
 
-        setTimeout(() => {
+        function handleClick() {
+            actionContainer.removeEventListener("click", handleClick);
+            actionContainer.classList.remove("start-button");
+            renderTiles();
             playGame();
-        }, 1800);
-    });
-}
+        }
+ 
+        const actionContainer = document.querySelector(".action-container");     
+        actionContainer.addEventListener("click", handleClick)
+    };
 
 function playGame() {
     function makeBoard() {
@@ -30,14 +31,25 @@ function playGame() {
                     null, null, null,
                     null, null, null,
                     null, null, null
-                ];
+                ]
+                marker.resetMarker();
+                playerTurn();
+                renderBoard();
             },
             getBoard: function() {
                 return board;
             },
             setTile: function(index, marker) {
                 board[index] = marker;
+            },
+            stopClicks: function() {
+                board.forEach((cell, index) => {
+                    if (cell === null) {
+                        board[index] = " ";
+                    }
+                });
             }
+
         };
     }
 
@@ -84,14 +96,21 @@ function playGame() {
             [0, 4, 8],
             [2, 4, 6]
         ];
-
+    
+        // Check for a win
         for (const [a, b, c] of winningCombinations) {
             if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-                return true;
+                return ['win', [a, b, c]];
             }
         }
-
-        return false;
+    
+        // Check for a draw
+        if (board.every(element => Boolean(element))) {
+            return ['draw', []];
+        }
+    
+        // Game is still ongoing
+        return [false, []];
     }
 
     function renderBoard() {
@@ -104,30 +123,38 @@ function playGame() {
 
     function playerTurn() {
         if (marker.getMarker() === 'X') {
-            if (playerOScore.classList.contains("active-turn")) {
-                playerOScore.classList.remove("active-turn");
-            }
-            if (!playerXScore.classList.contains("active-turn")) {
-                playerXScore.classList.add("active-turn");
-            }
-        } else if (marker.getMarker() === 'O') {
-            if (playerXScore.classList.contains("active-turn")) {
-                playerXScore.classList.remove("active-turn");
-            }
-            if (!playerOScore.classList.contains("active-turn")) {
-                playerOScore.classList.add("active-turn");
-            }
+            playerOScore.classList.remove("active-turn");
+            playerXScore.classList.add("active-turn");
+            actionText.textContent = `Player 1's Turn`;
+        } else {
+            playerXScore.classList.remove("active-turn");
+            playerOScore.classList.add("active-turn");
+            actionText.textContent = `Player 2's Turn`;
         }
     }
 
     function updateScores() {
         if (marker.getMarker() === 'X') {
             playerX.incrementScore();
-        } else if (marker.getMarker() === 'O') {
+        } else {
             playerO.incrementScore();
         }
         playerXScore.textContent = playerX.getScore();
         playerOScore.textContent = playerO.getScore();
+    }
+
+    function highlightWinningTiles(winningTiles) {
+        winningTiles.forEach(index => {
+            const tile = document.querySelector(`.tile:nth-child(${index + 1})`);
+            tile.classList.add("highlight");
+        });
+    }
+
+    function resetHighlighting() {
+        const tiles = document.querySelectorAll(".tile");
+        tiles.forEach(tile => {
+            tile.classList.remove("highlight");
+        });
     }
 
     function addTileEventListeners() {
@@ -138,12 +165,27 @@ function playGame() {
                 if (!gameBoard.getBoard()[index]) {
                     gameBoard.setTile(index, marker.getMarker());
                     renderBoard();
-                    if (checkWin(gameBoard.getBoard())) {
-                        setTimeout(() => {updateScores();
-                                          gameBoard.resetBoard();
-                                          marker.resetMarker();
-                                          renderBoard();
-                                          }, 1000);
+                    const [winDetected, winningTiles] = checkWin(gameBoard.getBoard());
+                    if (winDetected === 'win') {
+                        gameBoard.stopClicks();
+                        console.log(gameBoard.getBoard())
+                        highlightWinningTiles(winningTiles);
+                        updateScores();
+                        if (marker.getMarker() === 'X') {
+                            actionText.textContent = 'Player 1 Wins!'
+                        } else {
+                            actionText.textContent = 'Player 2 Wins!'
+                        }
+                        setTimeout(() => {
+                            gameBoard.resetBoard();
+                            resetHighlighting();
+                        }, 1500);
+                    } else if (winDetected === 'draw') {
+                        actionText.textContent = `It's a Draw!`;
+                        setTimeout(() => {
+                            gameBoard.resetBoard();
+                            resetHighlighting();
+                        }, 1500);
                     } else {
                         marker.changeMarker();
                         playerTurn();
@@ -161,8 +203,10 @@ function playGame() {
     const playerXScore = document.querySelector(".score-1");
     const playerOScore = document.querySelector(".score-2");
 
+    const actionText = document.querySelector(".action-container>span");
+
     addTileEventListeners();
-    playerTurn();  // Initialize the first turn
+    playerTurn(); // Initialize the first turn
 }
 
 window.onload = addStartEvent;

@@ -6,11 +6,13 @@
 * {
     box-sizing: border-box;
     --tile-colour: #f7f7f7;
+    --tile-colour-highlight: #e8e8e8;
     --tile-shadow: 0px 0px 4px 0px rgba(0,0,0,0.25);
     --tile-shadow-hover: 0px 0px 5px 0px rgba(0,0,0,0.2);
     --tile-inset-shadow: inset 0px 0px 10px 0px rgba(255,255,255,0.55);
     --tile-container-shadow: inset 0px 0px 7px 0px rgba(0,0,0,0.15);
     --tile-font-colour: #c9c9c9;
+    --highlight-font-colour: #fff;
     --text-input-colour: rgba(0,0,0,0);
     font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
     color: var(--tile-font-colour);
@@ -45,6 +47,14 @@ body {
     justify-content: center;
 }
 
+.start-button:hover {
+    background-color: var(--tile-colour-highlight);
+}
+
+.start-button:hover>span {
+    color: var(--highlight-font-colour);
+}
+
 .action-container>span {
     text-align: center;
 }
@@ -65,24 +75,20 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* opacity: 0; */
+    opacity: 0;
+}
+
+.highlight {
+    background-color: var(--tile-colour-highlight);
+}
+
+.highlight>span{
+    color: var(--highlight-font-colour);
 }
 
 .tile:hover {
     transform: scale(1.02);
     box-shadow: var(--tile-shadow-hover);
-}
-
-.tile:not(.start-button) {
-    opacity: 0;
-}
-
-.start-button {
-    transform: scale(3);
-}
-
-.start-button:hover {
-    transform: scale(3.02) !important;
 }
 
 .tile>span {
