@@ -10,9 +10,25 @@ function addStartEvent() {
             }, index * 150);
         });
     });
+    setTimeout(() => {
+        playGame()
+    }, 1200)
 }
 
 function playGame() {
+
+    function makeBoard() {
+        let board = Array(9).fill(null);
+
+        return {
+            resetBoard: function() {
+                for (let i = 0; i < board.length; i++)
+                    {
+                        board[i] = null;
+                    }
+            }
+        }
+    }
 
     function makePlayer() {
         let score = 0;
@@ -30,15 +46,18 @@ function playGame() {
         }
     }
 
-    function makeRoundCounter() {
-        let round = 1;
+    function makeMarker() {
+        let marker = 'X'
 
         return {
-            getRound: function() {
-                return round;
+            getMarker: function() {
+                return marker;
             },
-            incrementRound: function() {
-                round++;
+            changeMarker: function() {
+                marker = (marker === 'X') ? 'O' : 'X';
+            },
+            resetMarker: function() {
+                marker = 'X';
             }
         }
     }
@@ -64,56 +83,75 @@ function playGame() {
         return false;
     }
 
+    function renderBoard() {
+        const tileTexts = document.querySelectorAll(".tile>span");
+        const playerXScore = document.querySelector(".score-1");
+        const playerOScore = document.querySelector(".score-2");
+
+        tileTexts.forEach((tileText, index) => {
+            tileText.textContent = gameBoard[index];
+        })
+
+        playerXScore.textContent = playerX.getScore();
+        playerOScore.textContent = playerO.getScore();
+
+    }
+
+    function playerTurn() {
+        if (marker === 'X') {
+            if (playerOScore.classList.contains("active-turn")) {
+                playerOScore.classList.remove("active-turn")
+            }
+            if (!playerXScore.classList.contains("active-turn")) {
+                playerXScore.classList.add("active-turn")
+            }
+        } else if (marker === 'O') {
+            if (playerXScore.classList.contains("active-turn")) {
+                playerXScore.classList.remove("active-turn")
+            }
+            if (!playerOScore.classList.contains("active-turn")) {
+                playerOScore.classList.add("active-turn")
+            }
+        }
+    }
+
+    function checkWinner() {
+        if (marker = 'O') {
+            playerX.incrementScore();
+        } else if (marker = 'X') {
+            playerO.incrementScore();
+        }
+    }
+
     function addTileEventListeners() {
         const tiles = document.querySelectorAll(".tile");
 
         tiles.forEach((tile, index) => {
             tile.addEventListener("click", () => {
                 if (!gameBoard[index]) {
-                    gameBoard[index] = marker;
+                    gameBoard[index] = marker.getMarker();
+                    playerTurn();
+                    renderBoard();
+                    marker.changeMarker();
                 }
                 if (checkWin(gameBoard)) {
                     checkWinner();
-                    return;
+                    gameBoard.resetBoard();
+                    marker.resetMarker()
+                    renderBoard();
                 }
-                turn.incrementRound();
-                renderBoard();
             });
         });
     }
 
-    function renderBoard() {
-        const tileTexts = document.querySelectorAll(".tile>span");
-
-        tileTexts.forEach((tileText, index) => {
-            tileText.textContent = gameBoard[index];
-        })
-    }
-
-    function checkWinner() {
-        if (marker = 'X') {
-            playerX.incrementScore();
-        } else if (marker = 'O') {
-            playerO.incrementScore();
-        }
-    }
-
-    addTileEventListeners();
-
-    let gameBoard = Array(9).fill(null);
+    let gameBoard = makeBoard();
 
     let playerX = makePlayer();
     let playerO = makePlayer();
 
-    let turn = makeRoundCounter();
+    let marker = makeMarker();
 
-    let marker;
-
-    if (turn.getRound % 2 !== 0) {
-        marker = 'X'
-    } else {
-        marker = 'O'
-    }
+    addTileEventListeners();
 }
 
 window.onload = addStartEvent();

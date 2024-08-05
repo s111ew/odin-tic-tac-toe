@@ -39,6 +39,16 @@ body {
     padding: 15px;
 }
 
+.action-container {
+    width: 285px;
+    display: flex;
+    justify-content: center;
+}
+
+.action-container>span {
+    text-align: center;
+}
+
 .tile-container {
     display: grid;
     grid-template-columns: repeat(3, 75px);
