@@ -139,10 +139,11 @@ function playGame() {
                     gameBoard.setTile(index, marker.getMarker());
                     renderBoard();
                     if (checkWin(gameBoard.getBoard())) {
-                        updateScores();
-                        gameBoard.resetBoard();
-                        marker.resetMarker();
-                        renderBoard();
+                        setTimeout(() => {updateScores();
+                                          gameBoard.resetBoard();
+                                          marker.resetMarker();
+                                          renderBoard();
+                                          }, 1000);
                     } else {
                         marker.changeMarker();
                         playerTurn();
