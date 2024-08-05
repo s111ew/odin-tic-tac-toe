@@ -14,6 +14,7 @@
     --tile-font-colour: #c9c9c9;
     --highlight-font-colour: #fff;
     --text-input-colour: rgba(0,0,0,0);
+    --tile-hover-font: #dbdbdb;
     font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
     color: var(--tile-font-colour);
 }
@@ -91,10 +92,20 @@ body {
     box-shadow: var(--tile-shadow-hover);
 }
 
+.tile-hover {
+    color: var(--tile-hover-font) !important;
+}
+
+.tile-click-animation {
+    background-color: var(--tile-colour-highlight) !important;
+    color: var(--highlight-font-colour) !important;
+}
+
 .tile>span {
     font-family: arial;
     font-weight: 100;
     font-size: 50px;
+    color: var(--tile-font-colour);
 }
 
 .player-score-container {

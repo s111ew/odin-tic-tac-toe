@@ -161,9 +161,31 @@ function playGame() {
         const tiles = document.querySelectorAll(".tile");
 
         tiles.forEach((tile, index) => {
-            tile.addEventListener("click", () => {
+              // Mouseover event to temporarily show the marker
+        tile.addEventListener("mouseover", () => {
+            if (!gameBoard.getBoard()[index]) {
+                const tileText = tile.querySelector("span");
+                tileText.textContent = marker.getMarker();
+                tileText.classList.add("tile-hover");
+            }
+        });
+
+        // Mouseout event to revert the tile content
+        tile.addEventListener("mouseout", () => {
+            const tileText = tile.querySelector("span");
+            if (!gameBoard.getBoard()[index]) {
+                tileText.textContent = "";
+                tileText.classList.remove("tile-hover");
+            } else {
+                tileText.classList.remove("tile-hover");
+            }
+        });
+
+        tile.addEventListener("click", () => {
                 if (!gameBoard.getBoard()[index]) {
                     gameBoard.setTile(index, marker.getMarker());
+                    tile.classList.add("tile-click-animation");
+                    setTimeout(() => tile.classList.remove("tile-click-animation"), 200)
                     renderBoard();
                     const [winDetected, winningTiles] = checkWin(gameBoard.getBoard());
                     if (winDetected === 'win') {
